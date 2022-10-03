@@ -1,9 +1,11 @@
 import React from "react";
 import Delivery from "../assests/delivery.png";
+import HeroBg from "../assests/heroBg.png";
+import { heroData } from "../utils/data";
 
 function HomeContainer() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full" id="home">
       <div className="py-2 flex flex-col items-start justify-center flex-1 gap-5">
         <div className="flex items-center justify-center gap-2 px-4 py-1 bg-orange-100 rounded-full">
           <p className="text-base text-orange-500 font-semibold">
@@ -36,9 +38,29 @@ function HomeContainer() {
           Order Now
         </button>
       </div>
-
-      <div className="p-4 bg-blue-400 flex-1"></div>
-    </div>
+      {/* p-4 */}
+      <div className="py-2 flex-1 flex items-center relative">
+        <img
+          src={HeroBg}
+          className="ml-auto h-420 w-full lg:w-auto lg:h-505"
+          alt="hero-bg"
+        />
+        <div className="w-full h-full   absolute top-0 left-0 flex items-center lg:justify-end justify-center px-24 lg:px-16 py-4 gap-3 flex-wrap">
+          {heroData.map((h) => (
+            <div key={h.id} className="p-4 w-190 bg-cardOverlay backdrop-blur-md rounded-lg flex items-center justify-center flex-col drop-shadow-lg">
+              <img src={h.imageSrc} className="w-28 -mt-[85px] h-28" alt="ice-1" />
+              <p className="text-lg font-semibold text-textColor">{h.name}</p>
+              <p className="text-sm text-gray-400 font-semibold my-1">
+                {h.decp}
+              </p>
+              <p className="text-sm font-semibold text-headingColor">
+                <span className="text-xs text-red-600">Rs</span> {h.price}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
