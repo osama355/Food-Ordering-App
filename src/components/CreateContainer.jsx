@@ -15,31 +15,20 @@ import {
   uploadBytesResumable,
   ref,
   getDownloadURL,
+  deleteObject,
 } from "firebase/storage";
+import { saveItem } from "../utils/firebaseFunctions";
 
 function CreateContainer() {
+  const [title,setTitle]=useState("")
+  const [calories,setCalories]=useState("")
+  const [price,setPrice]=useState("")
+  const [category,setCategory]=useState("Select Category")
+  const [imageAsset,setImageAsset]=useState(null)
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState(false);
   const [alertStatus, setAlertStatus] = useState("danger");
   const [msg, setMsg] = useState(null);
-
-  const [itemData, setItemData] = useState({
-    title: "",
-    calories: "",
-    price: "",
-    category: null,
-    imageAsset: null,
-  });
-
-  let name, value;
-  const getItemData = (e) => {
-    name = e.target.name;
-    value = e.target.value;
-    setItemData({
-      ...itemData,
-      [name]: value,
-    });
-  };
 
   const uploadIamge = (e) => {
     setLoading(true);
@@ -65,24 +54,84 @@ function CreateContainer() {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setItemData({
-            imageAsset: downloadURL,
-          });
+          setImageAsset(downloadURL);
           setLoading(false);
           setFields(true);
           setMsg("Image Uploaded successfully");
           setAlertStatus("success");
           setTimeout(() => {
             setFields(false);
-          });
+          }, 4000);
         });
       }
     );
   };
 
-  const deleteImage = () => {};
+  const deleteImage = () => {
+    setLoading(true);
+    const deleteRef = ref(storage, imageAsset);
+    deleteObject(deleteRef).then(() => {
+      setImageAsset(null);
+      setLoading(false);
+      setFields(true);
+      setMsg("Image deleted Successfully");
+      setAlertStatus("success");
+      setTimeout(() => {
+        setFields(false);
+      }, 4000);
+    });
+  };
 
-  const saveDetails = () => {};
+  const saveDetails = () => {
+    setLoading(true);
+    try {
+      if (!calories || !price || !imageAsset || !category || !title) {
+        setFields(true);
+        setMsg("Error while uploading : Try Again");
+        setAlertStatus("danger");
+        setTimeout(() => {
+          setFields(false);
+          setLoading(false);
+        }, 4000);
+      } else {
+        const data = {
+          id: `${Date.now()}`,  
+          title: title,
+          imageURL: imageAsset,
+          category: category,
+          calories: calories,
+          qty: 1,
+          price: price,
+        };
+        saveItem(data);
+        setLoading(false);
+        setFields(true);
+        setMsg("Data uploaded successfully");
+        setAlertStatus("success");
+        setTimeout(() => {
+          setFields(false);
+        }, 4000);
+        clearData();
+      }
+    } catch (error) {
+      console.log(error);
+      setFields(true);
+      setMsg("Error While Uploading : Try Again Later");
+      setAlertStatus("danger");
+      setTimeout(() => {
+        setFields(false);
+        setLoading(false);
+      }, 4000);
+    }
+  };
+
+  const clearData=()=>{
+    setTitle("");
+    setImageAsset(null);
+    setCalories("");
+    setPrice("");
+    setCategory("Select Category");
+  }
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center">
@@ -98,7 +147,7 @@ function CreateContainer() {
                 : "bg-emerald-400 text-emerald-800"
             }`}
           >
-            {itemData.msg}
+            {msg}
           </motion.p>
         )}
 
@@ -108,8 +157,8 @@ function CreateContainer() {
             type="text"
             name="title"
             required
-            value={itemData.title}
-            onChange={getItemData}
+            value={title}
+            onChange={(e)=>setTitle(e.target.value)}
             placeholder="Give me a title..."
             className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
           />
@@ -117,12 +166,12 @@ function CreateContainer() {
 
         <div className="w-full">
           <select
-            name="category"
-            onChange={getItemData}
+            onChange={(e)=>setCategory(e.target.value)}
+            value="default"
             className="outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer"
           >
-            <option value="other" className="bg-white">
-              Select Category
+            <option value="default" className="bg-white">
+              {category}
             </option>
             {categories &&
               categories.map((item) => (
@@ -142,7 +191,7 @@ function CreateContainer() {
             <Loader />
           ) : (
             <>
-              {!itemData.imageAsset ? (
+              {!imageAsset ? (
                 <>
                   <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2">
@@ -154,8 +203,7 @@ function CreateContainer() {
                     <input
                       type="file"
                       accept="image/*"
-                      name="imageAsset"
-                      value={itemData.imageAsset}
+                      name="uploadImage"
                       className="w-0 h-0"
                       onChange={uploadIamge}
                     />
@@ -165,7 +213,7 @@ function CreateContainer() {
                 <>
                   <div className="relative h-full">
                     <img
-                      src={itemData.imageAsset}
+                      src={imageAsset}
                       alt="uploaded image"
                       className="w-full h-full object-cover"
                     />
@@ -189,8 +237,8 @@ function CreateContainer() {
               type="text"
               name="calories"
               required
-              value={itemData.calories}
-              onChange={getItemData}
+              value={calories}
+              onChange={(e)=>setCalories(e.target.value)}
               placeholder="Calories"
               className="w-full h-full text-lg bg-transparent text-textColor outline-none border-none placeholder:text-gray-400"
             />
@@ -200,8 +248,8 @@ function CreateContainer() {
             <MdAttachMoney className="text-gray-700 text-2xl" />
             <input
               type="text"
-              value={itemData.price}
-              onChange={getItemData}
+              value={price}
+              onChange={(e)=>setPrice(e.target.value)}
               name="price"
               required
               placeholder="Price"
