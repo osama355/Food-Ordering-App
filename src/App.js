@@ -4,8 +4,27 @@ import { MainContainer } from "./components";
 import { CreateContainer } from "./components";
 import { Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { useStateValue } from "./context/stateProvider";
+import { getAllItems } from "./utils/firebaseFunctions";
+import { useEffect } from "react";
+import { actionType } from "./context/reducer";
 
 function App() {
+  const [{ foodItems }, dispatch] = useStateValue();
+
+  const fetchData = async () => {
+    const response = await getAllItems();
+    // console.log(response);
+    dispatch({
+      type: actionType.SET_FOOD_ITEMS,
+      foodItems: response,
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       <div className="w-screen h-auto flex flex-col bg-primary">

@@ -17,18 +17,21 @@ import {
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
-import { saveItem } from "../utils/firebaseFunctions";
+import { getAllItems, saveItem } from "../utils/firebaseFunctions";
+import { useStateValue } from "../context/stateProvider";
+import { actionType } from "../context/reducer";
 
 function CreateContainer() {
-  const [title,setTitle]=useState("")
-  const [calories,setCalories]=useState("")
-  const [price,setPrice]=useState("")
-  const [category,setCategory]=useState("Select Category")
-  const [imageAsset,setImageAsset]=useState(null)
+  const [title, setTitle] = useState("");
+  const [calories, setCalories] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("Select Category");
+  const [imageAsset, setImageAsset] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState(false);
   const [alertStatus, setAlertStatus] = useState("danger");
   const [msg, setMsg] = useState(null);
+  const [{ fetchItems }, dispatch] = useStateValue();
 
   const uploadIamge = (e) => {
     setLoading(true);
@@ -95,7 +98,7 @@ function CreateContainer() {
         }, 4000);
       } else {
         const data = {
-          id: `${Date.now()}`,  
+          id: `${Date.now()}`,
           title: title,
           imageURL: imageAsset,
           category: category,
@@ -112,6 +115,7 @@ function CreateContainer() {
           setFields(false);
         }, 4000);
         clearData();
+        fetchData();
       }
     } catch (error) {
       console.log(error);
@@ -125,13 +129,21 @@ function CreateContainer() {
     }
   };
 
-  const clearData=()=>{
+  const clearData = () => {
     setTitle("");
     setImageAsset(null);
     setCalories("");
     setPrice("");
     setCategory("Select Category");
-  }
+  };
+
+  const fetchData = async () => {
+    const response = await getAllItems();
+    dispatch({
+      type: actionType.SET_FOOD_ITEMS,
+      foodItems: response,
+    });
+  };
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center">
@@ -158,7 +170,7 @@ function CreateContainer() {
             name="title"
             required
             value={title}
-            onChange={(e)=>setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="Give me a title..."
             className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
           />
@@ -166,7 +178,7 @@ function CreateContainer() {
 
         <div className="w-full">
           <select
-            onChange={(e)=>setCategory(e.target.value)}
+            onChange={(e) => setCategory(e.target.value)}
             value="default"
             className="outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer"
           >
@@ -238,7 +250,7 @@ function CreateContainer() {
               name="calories"
               required
               value={calories}
-              onChange={(e)=>setCalories(e.target.value)}
+              onChange={(e) => setCalories(e.target.value)}
               placeholder="Calories"
               className="w-full h-full text-lg bg-transparent text-textColor outline-none border-none placeholder:text-gray-400"
             />
@@ -249,7 +261,7 @@ function CreateContainer() {
             <input
               type="text"
               value={price}
-              onChange={(e)=>setPrice(e.target.value)}
+              onChange={(e) => setPrice(e.target.value)}
               name="price"
               required
               placeholder="Price"

@@ -1,18 +1,26 @@
-export const actionType={
-    SET_USER:"SET_USER",
-}
+export const actionType = {
+  SET_USER: "SET_USER",
+  SET_FOOD_ITEMS: "SET_FOOD_ITEMS",
+};
 
-export const reducer=(state,action)=>{
-    console.log(action);
-    switch(action.type){
-        case actionType.SET_USER:
-            return{
-                ...state,
-                user:action.user
-            };
-        default:
-            return state
-    }
-}
+export const reducer = (state, action) => {
+  console.log(action);
+  switch (action.type) {
+    case actionType.SET_USER:
+      return {
+        ...state,
+        user: action.user,
+      };
 
-export default reducer
+    case actionType.SET_FOOD_ITEMS:
+      return {
+        ...state,
+        foodItems: action.foodItems,
+      };
+
+    default:
+      return state;
+  }
+};
+
+export default reducer;
