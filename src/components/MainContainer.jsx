@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { HomeContainer, RowContainer } from ".";
+import { HomeContainer, RowContainer, MenuContainer } from ".";
 import { motion } from "framer-motion";
 import { MdChevronRight, MdChevronLeft } from "react-icons/md";
 import { useStateValue } from "../context/stateProvider";
@@ -43,6 +43,7 @@ function MainContainer() {
           data={foodItems?.filter((n) => n.category === "fruits")}
         />
       </section>
+      <MenuContainer/>
     </div>
   );
 }
