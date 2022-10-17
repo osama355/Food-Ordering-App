@@ -1,4 +1,3 @@
-import React, { useRef } from "react";
 import { HomeContainer, RowContainer, MenuContainer } from ".";
 import { motion } from "framer-motion";
 import { MdChevronRight, MdChevronLeft } from "react-icons/md";
@@ -24,14 +23,14 @@ function MainContainer() {
             <motion.div
               onClick={() => setScrollValue(-200)}
               whileTap={{ scale: 0.75 }}
-              className="w-8 h-8 rounded-lg bg-orange-400 hover:bg-orange-600 cursor-pointer transition-all duration-100 ease-in-out hover:shadow-lg flex items-center justify-center"
+              className="w-8 h-8 rounded-lg bg-orange-400 hover:bg-orange-600 cursor-pointer hover:shadow-lg flex items-center justify-center"
             >
               <MdChevronLeft className="text-lg text-white" />
             </motion.div>
             <motion.div
               onClick={() => setScrollValue(200)}
               whileTap={{ scale: 0.75 }}
-              className="w-8 h-8 rounded-lg bg-orange-400 hover:bg-orange-600 cursor-pointer transition-all duration-100 ease-in-out hover:shadow-lg flex items-center justify-center"
+              className="w-8 h-8 rounded-lg bg-orange-400 hover:bg-orange-600 cursor-pointer hover:shadow-lg flex items-center justify-center"
             >
               <MdChevronRight className="text-lg text-white" />
             </motion.div>
